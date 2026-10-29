@@ -4,18 +4,20 @@
 
 **AI-powered room acoustics analysis for studio monitoring**
 
-[![npm version](https://img.shields.io/npm/v/rew-mcp.svg?style=flat-square)](https://www.npmjs.com/package/rew-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen?style=flat-square&logo=node.js)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![CI](https://img.shields.io/github/actions/workflow/status/koltyj/rew-mcp/ci.yml?style=flat-square&label=CI)](https://github.com/koltyj/rew-mcp/actions)
-[![Tests](https://img.shields.io/badge/tests-884_passing-brightgreen?style=flat-square)](https://github.com/koltyj/rew-mcp/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/fl0zan0/rew-mcp/ci.yml?style=flat-square&label=CI)](https://github.com/fl0zan0/rew-mcp/actions)
+[![Tests](https://img.shields.io/badge/tests-884_passing-brightgreen?style=flat-square)](https://github.com/fl0zan0/rew-mcp/actions)
 
 A [Model Context Protocol](https://modelcontextprotocol.io) server that connects Claude to [Room EQ Wizard](https://www.roomeqwizard.com), turning raw measurements into actionable acoustics guidance.
 
 [Getting Started](#-getting-started) · [Tools](#-tools) · [Plugin](#-claude-code-plugin) · [Docs](#-documentation) · [Contributing](#-contributing)
 
 </div>
+
+> [!NOTE]
+> **This is a fork of [koltyj/rew-mcp](https://github.com/koltyj/rew-mcp).** The `rew-mcp` package on npm (1.0.0) predates upstream fixes and does not work with Claude Code (tool names contain dots). This fork tracks upstream `main` and adds a fix for REW's `/measurements` response format (see [CHANGELOG](CHANGELOG.md)). Install it from GitHub as shown below, not from npm.
 
 ---
 
@@ -60,7 +62,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "rew-mcp": {
       "command": "npx",
-      "args": ["-y", "rew-mcp"]
+      "args": ["-y", "github:fl0zan0/rew-mcp"]
     }
   }
 }
@@ -72,7 +74,7 @@ Add to `claude_desktop_config.json`:
 **Claude Code**
 
 ```bash
-claude mcp add rew-mcp -- npx -y rew-mcp
+claude mcp add rew-mcp -- npx -y github:fl0zan0/rew-mcp
 ```
 
 </td>
@@ -82,26 +84,22 @@ claude mcp add rew-mcp -- npx -y rew-mcp
 
 **Cursor**
 
-[![Install in Cursor](https://img.shields.io/badge/Cursor-Install_MCP-black?style=flat-square&logo=cursor)](https://cursor.com/install-mcp?name=rew-mcp&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsInJldy1tY3AiXX0%3D)
+[![Install in Cursor](https://img.shields.io/badge/Cursor-Install_MCP-black?style=flat-square&logo=cursor)](https://cursor.com/install-mcp?name=rew-mcp&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImdpdGh1YjpmbDB6YW4wL3Jldy1tY3AiXX0%3D)
 
-Or: Settings > Features > MCP Servers > `npx -y rew-mcp`
+Or: Settings > Features > MCP Servers > `npx -y github:fl0zan0/rew-mcp`
 
 </td>
 <td>
 
 **VS Code**
 
-[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_MCP-0098FF?style=flat-square&logo=visualstudiocode)](https://insiders.vscode.dev/redirect/mcp/install?name=rew-mcp&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22rew-mcp%22%5D%7D)
+[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_MCP-0098FF?style=flat-square&logo=visualstudiocode)](https://insiders.vscode.dev/redirect/mcp/install?name=rew-mcp&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22github%3Afl0zan0%2Frew-mcp%22%5D%7D)
 
 </td>
 </tr>
 </table>
 
-**Or via Smithery:**
-
-```bash
-npx -y @smithery/cli install rew-mcp --client claude
-```
+The first launch takes a little longer: npm clones the repository and builds it.
 
 ---
 
@@ -199,8 +197,8 @@ For [Claude Code](https://docs.anthropic.com/en/docs/claude-code) users, the inc
 # From a cloned repo
 claude --plugin-dir ./plugin
 
-# Or from npm (installs both the MCP server and plugin)
-npm install -g rew-mcp
+# Or installed globally from GitHub (installs both the MCP server and plugin)
+npm install -g github:fl0zan0/rew-mcp
 claude --plugin-dir $(npm root -g)/rew-mcp/plugin
 ```
 
