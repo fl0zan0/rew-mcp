@@ -275,9 +275,11 @@ export class REWApiClient {
         };
       }
 
-      const measurementCount = Array.isArray(measurementsResponse.data) 
-        ? measurementsResponse.data.length 
-        : 0;
+      const measurementCount = Array.isArray(measurementsResponse.data)
+        ? measurementsResponse.data.length
+        : (measurementsResponse.data && typeof measurementsResponse.data === 'object')
+          ? Object.keys(measurementsResponse.data).length
+          : 0;
 
       // Try to get application info (optional - may not exist in all versions)
       const appResponse = await this.request('GET', '/application');
@@ -383,17 +385,29 @@ export class REWApiClient {
   async listMeasurements(): Promise<MeasurementInfo[]> {
     const response = await this.request('GET', '/measurements');
 
-    if (response.status !== 200 || !Array.isArray(response.data)) {
+    if (response.status !== 200) {
       return [];
     }
 
-    return response.data.map((m: unknown, index: number) => {
+    // REW's /measurements returns an object keyed by measurement index
+    // (e.g. {"1": {...}}), not a JSON array, per REW's own OpenAPI spec.
+    let entries: Array<[string, unknown]>;
+    if (Array.isArray(response.data)) {
+      entries = response.data.map((m: unknown, i: number) => [String(i), m]);
+    } else if (response.data && typeof response.data === 'object') {
+      entries = Object.entries(response.data as Record<string, unknown>);
+    } else {
+      return [];
+    }
+
+    return entries.map(([key, m], i) => {
+      const index = Number.isFinite(Number(key)) ? Number(key) : i;
       const parsed = MeasurementInfoSchema.safeParse(m);
       if (!parsed.success) {
         // Fallback for malformed data
         return {
-          uuid: String((m as Record<string, unknown>)?.uuid ?? (m as Record<string, unknown>)?.id ?? `measurement-${index}`),
-          name: String((m as Record<string, unknown>)?.name ?? `Measurement ${index + 1}`),
+          uuid: String((m as Record<string, unknown>)?.uuid ?? (m as Record<string, unknown>)?.id ?? `measurement-${key}`),
+          name: String((m as Record<string, unknown>)?.title ?? (m as Record<string, unknown>)?.name ?? `Measurement ${key}`),
           index,
           type: 'unknown',
           has_ir: false,
@@ -401,8 +415,8 @@ export class REWApiClient {
         };
       }
       return {
-        uuid: parsed.data.uuid || parsed.data.id || `measurement_${index}`,
-        name: parsed.data.name || `Measurement ${index + 1}`,
+        uuid: parsed.data.uuid || parsed.data.id || `measurement_${key}`,
+        name: parsed.data.title || parsed.data.name || `Measurement ${key}`,
         index: parsed.data.index ?? index,
         type: parsed.data.type || 'unknown',
         has_ir: parsed.data.has_ir ?? (parsed.data.hasImpulse !== false),

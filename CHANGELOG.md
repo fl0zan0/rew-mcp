@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `rew_api_list_measurements` and `rew_api_connect` now handle REW's `/measurements` response, which is an object keyed by measurement index rather than an array; measurement names are read from `title`.
+
 ### Changed
 
 - Tightened the npm package contents to ship only public-facing documentation.
